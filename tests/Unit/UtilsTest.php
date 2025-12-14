@@ -3,9 +3,10 @@
 
 namespace Unit;
 
-use AurorasLive\Utils;
+
 use DateTime;
 use PHPUnit\Framework\TestCase;
+use Tlab\SunCalc\Utils;
 
 class UtilsTest extends TestCase
 {

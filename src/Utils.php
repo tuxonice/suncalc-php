@@ -1,6 +1,8 @@
 <?php
 
-namespace AurorasLive;
+declare(strict_types=1);
+
+namespace Tlab\SunCalc;
 
 use DateInterval;
 use DateTime;
@@ -13,53 +15,53 @@ class Utils
 
     public static int $J2000 = 2451545;
 
-    public static function toDays($date): float
+    public static function toDays(DateTime $date): float
     {
         return static::toJulian($date) - static::$J2000;
     }
 
-    public static function rightAscension($l, $b): float
+    public static function rightAscension(float $l, float $b): float
     {
         return atan2(sin($l) * cos(E) - tan($b) * sin(E), cos($l));
     }
 
-    public static function declination($l, $b): float
+    public static function declination(float $l, float $b): float
     {
         return asin(sin($b) * cos(E) + cos($b) * sin(E) * sin($l));
     }
 
-    public static function azimuth($H, $phi, $dec): float
+    public static function azimuth(float $h, float $phi, float $dec): float
     {
-        return atan2(sin($H), cos($H) * sin($phi) - tan($dec) * cos($phi));
+        return atan2(sin($h), cos($h) * sin($phi) - tan($dec) * cos($phi));
     }
 
-    public static function altitude($H, $phi, $dec): float
+    public static function altitude(float $h, float $phi, float $dec): float
     {
-        return asin(sin($phi) * sin($dec) + cos($phi) * cos($dec) * cos($H));
+        return asin(sin($phi) * sin($dec) + cos($phi) * cos($dec) * cos($h));
     }
 
-    public static function siderealTime($d, $lw): float
+    public static function siderealTime(float $d, float $lw): float
     {
         return RAD * (280.16 + 360.9856235 * $d) - $lw;
     }
 
     // calculations for sun times
-    public static function julianCycle($d, $lw): float
+    public static function julianCycle(float $d, float $lw): float
     {
         return round($d - J0 - $lw / (2 * M_PI));
     }
 
-    public static function approxTransit($Ht, $lw, $n): float
+    public static function approxTransit(float $Ht, float $lw, float $n): float
     {
         return J0 + ($Ht + $lw) / (2 * M_PI) + $n;
     }
 
-    public static function solarTransitJ($ds, $M, $L): float
+    public static function solarTransitJ(float $ds, float $M, float $L): float
     {
         return static::$J2000 + $ds + 0.0053 * sin($M) - 0.0069 * sin(2 * $L);
     }
 
-    public static function hourAngle($h, $phi, $d): float
+    public static function hourAngle(float $h, float $phi, float $d): float
     {
         return acos((sin($h) - sin($phi) * sin($d)) / (cos($phi) * cos($d)));
     }
@@ -74,12 +76,12 @@ class Utils
     }
 
     // general sun calculations
-    public static function solarMeanAnomaly($d): float
+    public static function solarMeanAnomaly(float $d): float
     {
         return RAD * (357.5291 + 0.98560028 * $d);
     }
 
-    public static function eclipticLongitude($M): float
+    public static function eclipticLongitude(float $M): float
     {
 
         $C = RAD * (1.9148 * sin($M) + 0.02 * sin(2 * $M) + 0.0003 * sin(3 * $M)); // equation of center
@@ -88,14 +90,14 @@ class Utils
         return $M + $C + $P + M_PI;
     }
 
-    public static function hoursLater($date, $h): DateTime
+    public static function hoursLater(DateTime $date, float $h): DateTime
     {
         $dt = clone $date;
 
         return $dt->add(new DateInterval('PT' . round($h * 3600) . 'S'));
     }
 
-    public static function sunCoords($d): DecRa
+    public static function sunCoords(float $d): DecRa
     {
 
         $M = self::solarMeanAnomaly($d);
@@ -107,7 +109,7 @@ class Utils
         );
     }
 
-    public static function moonCoords($d): DecRaDist
+    public static function moonCoords(float $d): DecRaDist
     {
  // geocentric ecliptic coordinates of the moon
 
@@ -131,7 +133,7 @@ class Utils
         return $date->getTimestamp() / static::$daySec - 0.5 + static::$J1970;
     }
 
-    public static function fromJulian($j, $d): ?DateTime
+    public static function fromJulian(float $j, DateTime $d): ?DateTime
     {
         if (!is_nan($j)) {
             $dt = new DateTime("@" . round(($j + 0.5 - static::$J1970) * static::$daySec));

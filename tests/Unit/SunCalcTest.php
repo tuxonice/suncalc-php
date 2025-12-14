@@ -2,8 +2,8 @@
 
 namespace Unit;
 
-use AurorasLive\AzAltDist;
-use AurorasLive\SunCalc;
+use Tlab\SunCalc\AzAltDist;
+use Tlab\SunCalc\SunCalc;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 

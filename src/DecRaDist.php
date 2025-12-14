@@ -1,6 +1,8 @@
 <?php
 
-namespace AurorasLive;
+declare(strict_types=1);
+
+namespace Tlab\SunCalc;
 
 class DecRaDist extends DecRa
 {

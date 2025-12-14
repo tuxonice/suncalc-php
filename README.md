@@ -1,32 +1,47 @@
 SunCalc PHP
 ===========
 
-SunCalc is a tiny PHP library for calculating sun position,
-sunlight phases (times for sunrise, sunset, dusk, etc.),
-moon position and lunar phase for the given location and time,
-based on the JavaScript library created by [Vladimir Agafonkin](http://agafonkin.com/en) ([@mourner](https://github.com/mourner)).
+SunCalc PHP is a tiny PHP library for calculating sun position, sunlight phases (times for sunrise, sunset, dusk, etc.), 
+moon position, and lunar phase for a given location and time. This fork brings the original [gregseth/suncalc-php](https://github.com/gregseth/suncalc-php) 
+library up to PHP 8, publishes it as a modern Composer package, and keeps full API compatibility with the original 
+JavaScript library created by [Vladimir Agafonkin](http://agafonkin.com/en) ([@mourner](https://github.com/mourner)).
 
-Most calculations are based on the formulas given in the excellent Astronomy Answers articles
-about [position of the sun](http://aa.quae.nl/en/reken/zonpositie.html)
-and [the planets](http://aa.quae.nl/en/reken/hemelpositie.html).
-You can read about different twilight phases calculated by SunCalc
-in the [Twilight article on Wikipedia](http://en.wikipedia.org/wiki/Twilight).
+Most calculations are based on the formulas given in the excellent Astronomy Answers articles about 
+the [position of the sun](http://aa.quae.nl/en/reken/zonpositie.html) and [the planets](http://aa.quae.nl/en/reken/hemelpositie.html). You can read about the different twilight phases calculated by 
+SunCalc in the [Twilight article on Wikipedia](http://en.wikipedia.org/wiki/Twilight).
 
+## Requirements
+
+- PHP ^8.0
+- ext-date (enabled by default on most PHP installations)
+
+## Installation
+
+Install the package via Composer:
+
+```bash
+composer require tuxonice/suncalc-php
+```
+
+Once installed, the library is available under the `Tlab\\SunCalc` namespace via PSR-4 autoloading.
 
 ## Usage example
 
 ```php
-// initialise library class with date and coordinates today's sunlight times for Paris
-$sunCalc = new AurorasLive\SunCalc(new DateTime(), 48.85, 2.35);
+<?php
 
-// format sunrise time from the DateTime object
+use Tlab\SunCalc\SunCalc;
+
+$sunCalc = new SunCalc(new DateTimeImmutable('now', new DateTimeZone('Europe/Paris')), 48.85, 2.35);
+
+// Format sunrise time from the DateTime object
 $sunTimes = $sunCalc->getSunTimes();
 $sunriseStr = $sunTimes['sunrise']->format('H:i');
 
-// get position of the sun (azimuth and altitude) at today's sunrise
+// Get position of the sun (azimuth and altitude) at today's sunrise
 $sunrisePos = $sunCalc->getPosition($sunTimes['sunrise']);
 
-// get sunrise azimuth in degrees
+// Get sunrise azimuth in degrees
 $sunriseAzimuth = $sunrisePos->azimuth * 180 / M_PI;
 ```
 
@@ -35,7 +50,7 @@ $sunriseAzimuth = $sunrisePos->azimuth * 180 / M_PI;
 ### Sunlight times
 
 ```php
-AurorasLive\SunCalc::getSunTimes()
+SunCalc::getSunTimes()
 ```
 
 Returns an array with the following indexes (each is a `DateTime` object):
@@ -63,7 +78,7 @@ Returns an array with the following indexes (each is a `DateTime` object):
 ### Sun position
 
 ```php
-AurorasLive\SunCalc::getSunPosition(/*DateTime*/ $timeAndDate)
+SunCalc::getSunPosition(/*DateTime*/ $timeAndDate)
 ```
 
 Returns an object with the following properties:
@@ -77,7 +92,7 @@ Returns an object with the following properties:
 ### Moon position
 
 ```php
-AurorasLive\SunCalc::getMoonPosition(/*DateTime*/ $timeAndDate)
+SunCalc::getMoonPosition(/*DateTime*/ $timeAndDate)
 ```
 
 Returns an object with the following properties:
@@ -90,7 +105,7 @@ Returns an object with the following properties:
 ### Moon illumination
 
 ```php
-AurorasLive\SunCalc::getMoonIllumination()
+SunCalc::getMoonIllumination()
 ```
 
 Returns an array with the following properties:
@@ -116,7 +131,7 @@ Moon phase value should be interpreted like this:
 ### Moon rise and set times
 
 ```php
-AurorasLive\SunCalc::getMoonTimes($inUTC)
+SunCalc::getMoonTimes($inUTC)
 ```
 
 Returns an object with the following indexes:
@@ -129,16 +144,34 @@ Returns an object with the following indexes:
 By default, it will search for moon rise and set during local user's day (from 0 to 24 hours).
 If `$inUTC` is set to true, it will instead search the specified date from 0 to 24 UTC hours.
 
-## Changelog
+## What changed in this fork
 
-#### 0.0.2 &mdash; 21 Aug, 2018
+- Upgraded the codebase to require PHP 8.0 or newer and leverage modern language features such as typed properties and strict typing.
+- Published under the package name `tuxonice/suncalc-php` with PSR-4 autoloading for the `Tlab\\SunCalc\\` namespace.
+- Added tooling for development (PHPUnit, PHP_CodeSniffer, PHPStan) to keep the implementation consistent and reliable.
 
-- Make this into a class and add a composer.json file to allow use with things like Laravel
+## Development
 
-#### 0.0.1 &mdash; 29 Jul, 2017
+1. Install dependencies:
+   ```bash
+   composer install
+   ```
+2. Run the test suite:
+   ```bash
+   vendor/bin/phpunit
+   ```
+3. (Optional) Run static analysis and coding standards:
+   ```bash
+   vendor/bin/phpstan analyse
+   vendor/bin/phpcs
+   ```
 
-- Preserve original timezone when passing in dates
+## Credits
 
-#### 0.0.0 &mdash; 30 Dec, 2015
+- Original JavaScript algorithm by [Vladimir Agafonkin](https://github.com/mourner)
+- Original PHP port by [Greg Seth](https://github.com/gregseth)
+- PHP 8 refactor and Composer package by [Helder Correia](https://github.com/tuxonice)
 
-- First commit.
+## License
+
+Released under the GPLv2 license. See the [LICENSE](LICENSE) file for details.

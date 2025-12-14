@@ -1,6 +1,8 @@
 <?php
 
-namespace AurorasLive;
+declare(strict_types=1);
+
+namespace Tlab\SunCalc;
 
 /*
  SunCalc is a PHP library for calculating sun/moon position and light phases.

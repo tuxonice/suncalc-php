@@ -1,6 +1,8 @@
 <?php
 
-namespace AurorasLive;
+declare(strict_types=1);
+
+namespace Tlab\SunCalc;
 
 class AzAlt
 {
@@ -21,5 +23,13 @@ class AzAlt
     public function getAltitude(): float
     {
         return $this->altitude;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'azimuth' => $this->azimuth,
+            'altitude' => $this->altitude
+        ];
     }
 }

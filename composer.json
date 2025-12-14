@@ -1,17 +1,33 @@
 {
-	"name": "auroras-live/suncalc-php",
+	"name": "tuxonice/suncalc-php",
 	"description": "Sun and moon calculations for PHP",
+	"keywords": [
+		"sun",
+		"moon",
+		"astronomy",
+		"sunrise",
+		"sunset",
+		"lunar",
+		"solar",
+		"suncalc"
+	],
 	"type": "library",
-	"license": "GPLv2",
+	"license": "GPL-2.0-or-later",
 	"autoload": {
 		"psr-4": {
-			"AurorasLive\\": "src/"
+			"Tlab\\SunCalc\\": "src/"
 		}
 	},
-	"authors": [{
+	"authors": [
+		{
 		"name": "David Gray and Greg Seth",
 		"email": "david@auroras.live"
-	}],
+		},
+		{
+            "name": "Helder Correia",
+            "email": "tuxboy@tlab.pt"
+        }
+	],
 	"require": {
 		"php": "^8.0"
 	},

@@ -1,0 +1,8 @@
+.github export-ignore
+.phpunit.result.cache export-ignore
+/tests export-ignore
+/tools export-ignore
+/phpunit.xml export-ignore
+/phpunit.php export-ignore
+/phpcs.xml export-ignore
+/phpstan.neon export-ignore

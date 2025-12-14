@@ -1,6 +1,8 @@
 <?php
 
-namespace AurorasLive;
+declare(strict_types=1);
+
+namespace Tlab\SunCalc;
 
 class AzAltDist extends AzAlt
 {
@@ -15,5 +17,14 @@ class AzAltDist extends AzAlt
     public function getDist(): float
     {
         return $this->dist;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'azimuth' => $this->azimuth,
+            'altitude' => $this->altitude,
+            'dist' => $this->dist,
+        ];
     }
 }
