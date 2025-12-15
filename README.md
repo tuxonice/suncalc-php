@@ -1,6 +1,12 @@
 SunCalc PHP
 ===========
 
+[![Tests](https://github.com/tuxonice/suncalc-php/actions/workflows/tests.yml/badge.svg)](https://github.com/tuxonice/suncalc-php/actions/workflows/tests.yml)
+[![Latest Version](https://img.shields.io/packagist/v/tuxonice/suncalc-php.svg)](https://packagist.org/packages/tuxonice/suncalc-php)
+[![PHP Version](https://img.shields.io/packagist/php-v/tuxonice/suncalc-php.svg)](https://packagist.org/packages/tuxonice/suncalc-php)
+[![Total Downloads](https://img.shields.io/packagist/dt/tuxonice/suncalc-php.svg)](https://packagist.org/packages/tuxonice/suncalc-php)
+[![License](https://img.shields.io/packagist/l/tuxonice/suncalc-php.svg)](LICENSE)
+
 SunCalc PHP is a tiny PHP library for calculating sun position, sunlight phases (times for sunrise, sunset, dusk, etc.), 
 moon position, and lunar phase for a given location and time. This fork brings the original [gregseth/suncalc-php](https://github.com/gregseth/suncalc-php) 
 library up to PHP 8, publishes it as a modern Composer package, and keeps full API compatibility with the original 

@@ -1,40 +1,40 @@
 {
-	"name": "tuxonice/suncalc-php",
-	"description": "Sun and moon calculations for PHP",
-	"keywords": [
-		"sun",
-		"moon",
-		"astronomy",
-		"sunrise",
-		"sunset",
-		"lunar",
-		"solar",
-		"suncalc"
-	],
-	"type": "library",
-	"license": "GPL-2.0-or-later",
-	"autoload": {
-		"psr-4": {
-			"Tlab\\SunCalc\\": "src/"
-		}
-	},
-	"authors": [
-		{
-		"name": "David Gray and Greg Seth",
-		"email": "david@auroras.live"
-		},
-		{
-            "name": "Helder Correia",
-            "email": "tuxboy@tlab.pt"
-        }
-	],
-	"require": {
-		"php": "^8.0"
-	},
-	"require-dev": {
-		"symfony/var-dumper": "^6.0",
-		"phpunit/phpunit": "^9",
-		"squizlabs/php_codesniffer": "^3.7",
-		"phpstan/phpstan": "^1.9"
-	}
+  "name": "tuxonice/suncalc-php",
+  "description": "Sun and moon calculations for PHP",
+  "keywords": [
+    "sun",
+    "moon",
+    "astronomy",
+    "sunrise",
+    "sunset",
+    "lunar",
+    "solar",
+    "suncalc"
+  ],
+  "type": "library",
+  "license": "GPL-2.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "Tlab\\SunCalc\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "David Gray and Greg Seth",
+      "email": "david@auroras.live"
+    },
+    {
+      "name": "Helder Correia",
+      "email": "tuxboy@tlab.pt"
+    }
+  ],
+  "require": {
+    "php": "^8.0"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^6.0",
+    "phpunit/phpunit": "^9",
+    "squizlabs/php_codesniffer": "^3.7",
+    "phpstan/phpstan": "^1.9"
+  }
 }
