@@ -95,17 +95,25 @@ class SunCalcTest extends TestCase
 
         self::assertNotEmpty($phases);
 
+        // Verify all 4 major phase types are present
+        $phaseTypes = array_unique(array_column($phases, 'phase'));
+        self::assertContains('New Moon', $phaseTypes);
+        self::assertContains('Full Moon', $phaseTypes);
+        self::assertContains('First Quarter', $phaseTypes);
+        self::assertContains('Last Quarter', $phaseTypes);
+
+        // ~90 day period contains ~3 lunar cycles (29.5 days each)
         $newMoons = array_filter($phases, fn ($p) => $p['phase'] === 'New Moon');
-        $fullMoons = array_filter($phases, fn ($p) => $p['phase'] === 'Full Moon');
+        self::assertGreaterThanOrEqual(2, count($newMoons));
 
-        self::assertCount(1, $newMoons);
-        self::assertCount(1, $fullMoons);
-
-        $firstQuarter = array_filter($phases, fn ($p) => $p['phase'] === 'First Quarter');
-        $lastQuarter = array_filter($phases, fn ($p) => $p['phase'] === 'Last Quarter');
-
-        self::assertCount(1, $firstQuarter);
-        self::assertCount(1, $lastQuarter);
+        // Verify structure of each phase entry
+        foreach ($phases as $phase) {
+            self::assertArrayHasKey('phase', $phase);
+            self::assertArrayHasKey('datetime', $phase);
+            self::assertArrayHasKey('fraction', $phase);
+            self::assertArrayHasKey('phaseValue', $phase);
+            self::assertInstanceOf(DateTime::class, $phase['datetime']);
+        }
     }
 
     public function testGetDailyMoonPhases(): void

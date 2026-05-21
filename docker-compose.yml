@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/vendor
+    command: vendor/bin/phpunit
+
+  phpstan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/vendor
+    command: vendor/bin/phpstan analyse
+
+  phpcs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/vendor
+    command: vendor/bin/phpcs
+
+  phpcbf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/vendor
+    command: vendor/bin/phpcbf

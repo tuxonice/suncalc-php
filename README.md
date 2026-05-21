@@ -172,6 +172,37 @@ If `$inUTC` is set to true, it will instead search the specified date from 0 to 
    vendor/bin/phpcs
    ```
 
+### Using Docker
+
+Alternatively, you can use Docker to run tests without installing PHP locally:
+
+```bash
+# Build the image
+docker-compose build
+
+# Run tests
+docker-compose run --rm tests
+
+# Run static analysis
+docker-compose run --rm phpstan
+
+# Run coding standards check
+docker-compose run --rm phpcs
+
+# Auto-fix coding standards
+docker-compose run --rm phpcbf
+```
+
+Or use the provided Makefile:
+
+```bash
+make build    # Build Docker image
+make test    # Run tests
+make phpstan # Run static analysis
+make phpcs   # Check coding standards
+make phpcbf  # Fix coding standards
+```
+
 ## Credits
 
 - Original JavaScript algorithm by [Vladimir Agafonkin](https://github.com/mourner)

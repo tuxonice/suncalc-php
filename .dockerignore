@@ -1,0 +1,14 @@
+.git
+.gitignore
+.gitattributes
+.github
+*.md
+Dockerfile
+docker-compose.yml
+.dockerignore
+.phpunit.result.cache
+phpcs.xml
+phpstan.neon
+phpunit.xml
+phpunit.php
+tools/
