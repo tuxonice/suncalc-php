@@ -230,4 +230,222 @@ class SunCalc
 
         return $result;
     }
+
+    /**
+     * Get all major moon phases occurring within a date period.
+     *
+     * @return array<int, array{phase: string, datetime: DateTime, fraction: float, phaseValue: float}>
+     */
+    public function getMoonPhasesForPeriod(DateTime $startDate, DateTime $endDate): array
+    {
+        $phases = [];
+        $targetPhases = [0.0, 0.25, 0.5, 0.75];
+        $phaseNames = ['New Moon', 'First Quarter', 'Full Moon', 'Last Quarter'];
+
+        $current = clone $startDate;
+        $interval = new \DateInterval('P1D');
+
+        $prevPhase = $this->getMoonIlluminationForDate($current)['phase'];
+
+        while ($current <= $endDate) {
+            $current->add($interval);
+            $currIllumination = $this->getMoonIlluminationForDate($current);
+            $currPhase = $currIllumination['phase'];
+
+            foreach ($targetPhases as $index => $targetPhase) {
+                if ($this->hasPhaseCrossing($prevPhase, $currPhase, $targetPhase)) {
+                    $exactDate = $this->refinePhaseDate(clone $current, $targetPhase);
+                    if ($exactDate >= $startDate && $exactDate <= $endDate) {
+                        $illumination = $this->getMoonIlluminationForDate($exactDate);
+                        $phases[] = [
+                            'phase' => $phaseNames[$index],
+                            'datetime' => $exactDate,
+                            'fraction' => $illumination['fraction'],
+                            'phaseValue' => $targetPhase,
+                        ];
+                    }
+                }
+            }
+
+            $prevPhase = $currPhase;
+        }
+
+        usort($phases, fn ($a, $b) => $a['datetime'] <=> $b['datetime']);
+
+        return $phases;
+    }
+
+    /**
+     * Get daily moon phase data for a number of days starting from a date.
+     *
+     * @return array<int, array{date: DateTime, phase: float, phaseName: string, fraction: float}>
+     */
+    public function getDailyMoonPhases(DateTime $startDate, int $days): array
+    {
+        $result = [];
+        $current = clone $startDate;
+        $interval = new \DateInterval('P1D');
+
+        for ($i = 0; $i < $days; $i++) {
+            $illumination = $this->getMoonIlluminationForDate($current);
+            $result[] = [
+                'date' => clone $current,
+                'phase' => $illumination['phase'],
+                'phaseName' => $this->getPhaseName($illumination['phase']),
+                'fraction' => $illumination['fraction'],
+            ];
+            $current->add($interval);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Find the next occurrence of a specific moon phase.
+     */
+    public function findNextMoonPhase(string $phaseName, DateTime $startDate): ?DateTime
+    {
+        $targetPhase = $this->getPhaseValueFromName($phaseName);
+        if ($targetPhase === null) {
+            return null;
+        }
+
+        $current = clone $startDate;
+        $interval = new \DateInterval('P1D');
+
+        $prevPhase = $this->getMoonIlluminationForDate($current)['phase'];
+
+        for ($i = 0; $i < 32; $i++) {
+            $current->add($interval);
+            $currPhase = $this->getMoonIlluminationForDate($current)['phase'];
+
+            if ($this->hasPhaseCrossing($prevPhase, $currPhase, $targetPhase)) {
+                return $this->refinePhaseDate(clone $current, $targetPhase);
+            }
+
+            $prevPhase = $currPhase;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get moon illumination for a specific date.
+     */
+    private function getMoonIlluminationForDate(DateTime $date): array
+    {
+        $d = Utils::toDays($date);
+        $s = Utils::sunCoords($d);
+        $m = Utils::moonCoords($d);
+
+        $sdist = 149598000;
+
+        $phi = acos(sin($s->dec) * sin($m->dec) + cos($s->dec) * cos($m->dec) * cos($s->ra - $m->ra));
+        $inc = atan2($sdist * sin($phi), $m->dist - $sdist * cos($phi));
+        $angle = atan2(
+            cos($s->dec) * sin($s->ra - $m->ra),
+            sin($s->dec) * cos($m->dec) - cos($s->dec) * sin($m->dec) * cos($s->ra - $m->ra)
+        );
+
+        return [
+            'fraction' => (1 + cos($inc)) / 2,
+            'phase' => 0.5 + 0.5 * $inc * ($angle < 0 ? -1 : 1) / M_PI,
+        ];
+    }
+
+    /**
+     * Check if a phase value was crossed between two phase values.
+     */
+    private function hasPhaseCrossing(float $prevPhase, float $currPhase, float $targetPhase): bool
+    {
+        $epsilon = 0.02;
+
+        if (abs($currPhase - $targetPhase) < $epsilon) {
+            return true;
+        }
+
+        if ($prevPhase > $currPhase) {
+            $currPhase += 1.0;
+        }
+
+        $targetPhaseNext = $targetPhase + 1.0;
+
+        return ($prevPhase <= $targetPhase && $currPhase >= $targetPhase)
+            || ($prevPhase <= $targetPhaseNext && $currPhase >= $targetPhaseNext);
+    }
+
+    /**
+     * Refine the exact date of a moon phase using binary search.
+     */
+    private function refinePhaseDate(DateTime $approxDate, float $targetPhase): DateTime
+    {
+        $low = clone $approxDate;
+        $low->modify('-2 days');
+        $high = clone $approxDate;
+        $high->modify('+2 days');
+
+        for ($i = 0; $i < 20; $i++) {
+            $mid = new DateTime('@' . (($low->getTimestamp() + $high->getTimestamp()) / 2));
+            $midPhase = $this->getMoonIlluminationForDate($mid)['phase'];
+
+            $normalizedTarget = $targetPhase;
+            if ($targetPhase < 0.5 && $midPhase > 0.75) {
+                $normalizedTarget = $targetPhase + 1.0;
+            }
+
+            if ($midPhase < $normalizedTarget) {
+                $low = $mid;
+            } else {
+                $high = $mid;
+            }
+        }
+
+        return new DateTime('@' . (($low->getTimestamp() + $high->getTimestamp()) / 2));
+    }
+
+    /**
+     * Get phase name from phase value.
+     */
+    private function getPhaseName(float $phase): string
+    {
+        if ($phase < 0.02 || $phase > 0.98) {
+            return 'New Moon';
+        }
+        if ($phase < 0.23) {
+            return 'Waxing Crescent';
+        }
+        if ($phase < 0.27) {
+            return 'First Quarter';
+        }
+        if ($phase < 0.48) {
+            return 'Waxing Gibbous';
+        }
+        if ($phase < 0.52) {
+            return 'Full Moon';
+        }
+        if ($phase < 0.73) {
+            return 'Waning Gibbous';
+        }
+        if ($phase < 0.77) {
+            return 'Last Quarter';
+        }
+
+        return 'Waning Crescent';
+    }
+
+    /**
+     * Get phase value from phase name.
+     */
+    private function getPhaseValueFromName(string $phaseName): ?float
+    {
+        $normalized = strtolower(str_replace([' ', '-', '_'], '', $phaseName));
+
+        return match ($normalized) {
+            'new', 'newmoon' => 0.0,
+            'firstquarter', 'first', 'quarter1' => 0.25,
+            'full', 'fullmoon' => 0.5,
+            'lastquarter', 'last', 'thirdquarter', 'quarter3' => 0.75,
+            default => null,
+        };
+    }
 }

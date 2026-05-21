@@ -84,4 +84,66 @@ class SunCalcTest extends TestCase
         );
     }
 
+    public function testGetMoonPhasesForPeriod(): void
+    {
+        $sunCalc = new SunCalc(new DateTime('2022-01-01'), 48.85, 2.35);
+
+        $phases = $sunCalc->getMoonPhasesForPeriod(
+            new DateTime('2022-01-01'),
+            new DateTime('2022-03-31')
+        );
+
+        self::assertNotEmpty($phases);
+
+        $newMoons = array_filter($phases, fn ($p) => $p['phase'] === 'New Moon');
+        $fullMoons = array_filter($phases, fn ($p) => $p['phase'] === 'Full Moon');
+
+        self::assertCount(1, $newMoons);
+        self::assertCount(1, $fullMoons);
+
+        $firstQuarter = array_filter($phases, fn ($p) => $p['phase'] === 'First Quarter');
+        $lastQuarter = array_filter($phases, fn ($p) => $p['phase'] === 'Last Quarter');
+
+        self::assertCount(1, $firstQuarter);
+        self::assertCount(1, $lastQuarter);
+    }
+
+    public function testGetDailyMoonPhases(): void
+    {
+        $sunCalc = new SunCalc(new DateTime('2022-01-01'), 48.85, 2.35);
+
+        $daily = $sunCalc->getDailyMoonPhases(new DateTime('2022-01-01'), 30);
+
+        self::assertCount(30, $daily);
+
+        foreach ($daily as $day) {
+            self::assertArrayHasKey('date', $day);
+            self::assertArrayHasKey('phase', $day);
+            self::assertArrayHasKey('phaseName', $day);
+            self::assertArrayHasKey('fraction', $day);
+            self::assertGreaterThanOrEqual(0.0, $day['phase']);
+            self::assertLessThanOrEqual(1.0, $day['phase']);
+        }
+    }
+
+    public function testFindNextMoonPhase(): void
+    {
+        $sunCalc = new SunCalc(new DateTime('2022-01-01'), 48.85, 2.35);
+
+        $nextFull = $sunCalc->findNextMoonPhase('full', new DateTime('2022-01-01'));
+        self::assertNotNull($nextFull);
+
+        $nextNew = $sunCalc->findNextMoonPhase('new', new DateTime('2022-01-15'));
+        self::assertNotNull($nextNew);
+
+        $nextFirst = $sunCalc->findNextMoonPhase('first quarter', new DateTime('2022-01-01'));
+        self::assertNotNull($nextFirst);
+
+        $nextLast = $sunCalc->findNextMoonPhase('last quarter', new DateTime('2022-01-01'));
+        self::assertNotNull($nextLast);
+
+        $invalid = $sunCalc->findNextMoonPhase('invalid', new DateTime('2022-01-01'));
+        self::assertNull($invalid);
+    }
+
 }
